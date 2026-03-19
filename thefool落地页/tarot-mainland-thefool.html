@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>塔罗牌NFC落地页 | 清新弥散风</title>
+    <style>
+        /* 全局样式 - 核心重置+居中 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "微软雅黑", sans-serif;
+        }
+
+        /* ========== 【可视化替换区1：背景图】 ========== */
+        body {
+            height: 100vh;
+            overflow: aoto;
+            background: linear-gradient(135deg, #fdf2f8, #fef7fb);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 页面初始淡入动画 */
+            animation: pageFadeIn 0.6s ease forwards;
+            opacity: 0;
+            padding-bottom: 20px; /* 🔴给body底部留间距 */
+        }
+
+        /* 新增：页面淡入动画 */
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 弥散装饰 */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.7;
+            background: #ffc1e9;
+            top: 25%;
+            right: 15%;
+            z-index: 1;
+        }
+        body::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            background: #b3e5fc;
+            bottom: 20%;
+            left: 10%;
+            z-index: 1;
+        }
+
+        /* 页面容器 - 新增最大宽度，确保在大屏手机上不会过宽 */
+.page-container {
+    text-align: center;
+    z-index: 2;
+    width: 100%;
+    max-width: 450px; /* 适配主流手机的最佳宽度 */
+    padding: 0 20px;
+    margin: 0 auto; /* 强制居中，不会左右拉伸 */
+}
+        /* ========== 【可视化替换区2：标题样式】 ========== */
+        h1 {
+            font-size: 28px;
+            color: #9f7aea; /* 淡紫色（弥散风） */
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 洗牌提示文字 */
+        .shuffle-tip {
+            font-size: 17px;
+            color: #e53e3e;
+            margin: 10px 0 30px;
+            opacity: 0;
+            animation: fadeTip 3s ease forwards;
+        }
+        @keyframes fadeTip {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 塔罗牌堆容器 */
+.tarot-deck {
+    width: 80%; /* 🔴 改成百分比，适配不同手机宽度 */
+    max-width: 240px; /* 🔴 限制最大宽度，不会无限放大 */
+    height: auto; /* 🔴 高度自动，保持比例 */
+    aspect-ratio: 240 / 340; /* 🔴 强制牌的宽高比（240:340），不会变形 */
+    margin: 0 auto 30px;
+    perspective: 1500px;
+    position: relative;
+}
+
+        /* ========== 【可视化替换区3：塔罗牌图片】 ========== */
+        .tarot-card-back {
+            width: 100%;
+            height: 100%;
+            background: url("https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/d22cc34919114204b071414690f2b524.png~tplv-a9rns2rl98-image.png?lk3s=8e244e95&rcl=202603161440146A824665AF1D83CC2B58&rrcfp=dafada99&x-expires=2089867215&x-signature=U5qtZIFw%2FCb1nM3IWHmaznUP6WI%3D") center/cover no-repeat;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            animation: shuffleCard 2.5s ease-in-out;
+            overflow: hidden;
+        }
+        /* 牌边反光 */
+        .tarot-card-back::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.2) 0%, 
+                rgba(255, 255, 255, 0) 40%, 
+                rgba(255, 255, 255, 0) 60%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* 拟真洗牌动画 */
+        @keyframes shuffleCard {
+            0% { transform: translateX(0) translateY(0) rotate(0) rotateZ(0); z-index: 2; }
+            10% { transform: translateX(-15px) translateY(-5px) rotate(-2deg) rotateZ(1deg); z-index: 5; }
+            20% { transform: translateX(12px) translateY(-3px) rotate(3deg) rotateZ(-1deg); z-index: 4; }
+            30% { transform: translateX(-10px) translateY(-4px) rotate(-1deg) rotateZ(2deg); z-index: 6; }
+            40% { transform: translateX(8px) translateY(-2px) rotate(2deg) rotateZ(-2deg); z-index: 3; }
+            50% { transform: translateX(-6px) translateY(-3px) rotate(-3deg) rotateZ(1deg); z-index: 7; }
+            60% { transform: translateX(5px) translateY(-1px) rotate(1deg) rotateZ(-1deg); z-index: 4; }
+            70% { transform: translateX(-3px) translateY(-2px) rotate(-2deg) rotateZ(2deg); z-index: 5; }
+            80% { transform: translateX(2px) translateY(0) rotate(2deg) rotateZ(-2deg); z-index: 3; }
+            90% { transform: translateX(-1px) translateY(-1px) rotate(-1deg) rotateZ(1deg); z-index: 6; }
+            100% { transform: translateX(0) translateY(0) rotate(0) rotateZ(0); z-index: 2; }
+        }
+
+        /* 每张牌洗牌延迟 */
+        .tarot-card-back:nth-child(1) { animation-delay: 0.1s; z-index: 1; }
+        .tarot-card-back:nth-child(2) { animation-delay: 0.2s; z-index: 2; }
+        .tarot-card-back:nth-child(3) { animation-delay: 0.3s; z-index: 3; }
+        .tarot-card-back:nth-child(4) { animation-delay: 0.4s; z-index: 2; }
+        .tarot-card-back:nth-child(5) { animation-delay: 0.5s; z-index: 1; }
+
+        /* 要抽出的牌 */
+        .pick-card {
+            z-index: 4 !important;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.8s;
+        }
+
+        /* 抽牌后翻面 */
+        .tarot-deck.draw .pick-card {
+            transform: translateY(-25px) rotateY(180deg);
+            opacity: 0;
+            z-index: 5 !important;
+        }
+
+        /* 塔罗牌正面 */
+        .tarot-card-front {
+            width: 100%;
+            height: 100%;
+            background: url("https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/5ecab632a5134c00904ba8bf9a106fcf.png~tplv-a9rns2rl98-image.png?lk3s=8e244e95&rcl=202603161440146A824665AF1D83CC2B58&rrcfp=dafada99&x-expires=2089867215&x-signature=IuvLg00Y%2FHgwlomAQeMOUFLPwcQ%3D") center/cover no-repeat;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotateY(-180deg);
+            z-index: 3;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.8s;
+            overflow: hidden;
+        }
+        /* 正面牌反光 */
+        .tarot-card-front::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.25) 0%, 
+                rgba(255, 255, 255, 0) 40%, 
+                rgba(255, 255, 255, 0) 60%, 
+                rgba(255, 255, 255, 0.15) 100%);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* 抽牌后显示正面 */
+        .tarot-deck.draw .tarot-card-front {
+            transform: translateY(-25px) rotateY(0);
+            opacity: 1;
+            z-index: 6 !important;
+        }
+
+        /* ========== 【可视化替换区4：提示文字】 ========== */
+        .tip-text {
+            font-size: 17px;
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        /* ========== 【可视化替换区5：按钮样式（修复hover生效问题）】 ========== */
+        .enter-btn {
+            padding: 14px 36px;
+            background: #fcc367; /* 基础柔黄色 */
+            color: #fff !important; /* 强制文字白色，避免被其他样式覆盖 */
+            text-decoration: none !important; /* 去掉下划线 */
+            border-radius: 35px;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 8px 20px rgba(252, 195, 103, 0.25);
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.7s ease 3.5s, transform 0.2s ease, box-shadow 0.2s ease; /* 保留原有动画+新增点击过渡 */
+            border: none;
+            cursor: pointer;
+            /* 新增：确保按钮可交互 */
+            position: relative;
+            z-index: 10;
+            margin-bottom: 80px;
+        }
+        /* 鼠标移上去：深黄 + 上浮 + 阴影变大（优先级拉满） */
+        .enter-btn:hover {
+            background: #f5a623 !important; /* 深橙色黄 */
+            transform: translateY(-5px) !important;
+            box-shadow: 0 12px 25px rgba(245, 166, 35, 0.35) !important;
+        }
+        /* 点击时：暗黄 + 轻微缩小（优先级拉满）- 强化点击动画 */
+        .enter-btn:active {
+            background: #e69500 !important; /* 暗黄色 */
+            transform: translateY(-2px) scale(0.95) !important; /* 缩小更明显，触感更强 */
+            box-shadow: 0 6px 15px rgba(230, 149, 0, 0.3) !important;
+        }
+        /* 抽牌后显示按钮 */
+        .tarot-deck.draw ~ .enter-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 音乐按钮 */
+        .music-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 0 22px rgba(0, 0, 0, 0.12);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        .music-btn:hover {
+            transform: rotate(15deg);
+        }
+
+       /* ========== 底部灰色小字号购买链接（终极优化版） ========== */
+.buy-link-container {
+    position: fixed;
+    /* 1. 适配全面屏安全区 + 远离底部边缘 */
+    bottom: max(20px, env(safe-area-inset-bottom) + 10px);
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 999; /* 确保在最上层 */
+    /* 2. 扩大点击区域*/
+    padding: 12px 0;
+   }
+.buy-link {
+    font-size: 15px; /* 3. 文字放大（从14→15px），更易读 */
+    color: #6b7280 !important; /* 4. 加深灰色，提高对比度 */
+    font-weight: 500; /* 轻微加粗，更醒目 */
+    text-decoration: none !important;
+    transition: color 0.2s ease;
+    /* 5. 超大点击热区（即使点到文字外也能触发） */
+    padding: 8px 20px;
+    display: inline-block; /* 让padding生效 */
+    border-radius: 4px; /* 轻微圆角，点击更友好 */
+}
+.buy-link:hover {
+    color: #4b5563 !important; /* hover时颜色更深，反馈更明显 */
+    background: rgba(249, 250, 251, 1); /* hover加浅背景，更易感知 */
+}
+
+/* 关键：给页面主体加底部间距，避免内容被链接遮挡 */
+.page-container {
+    text-align: center;
+    z-index: 2;
+    width: 100%;
+    max-width: 450px;
+    padding: 0 20px;
+    margin: 0 auto;
+     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - 100px); /* 适配屏幕高度，不溢出 */
+}
+
+        /* 跳转遮罩样式 */
+        .jump-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fcc367; /* 柔黄色 */
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 音乐控制 -->
+    <button class="music-btn" id="musicBtn">🎵</button>
+    <audio id="bgMusic" loop>
+        <source src="https://lf-cn-txcdn.coze.cn/ocean-cloud-tos/82d3831970644318b900fa956c66d38d6.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 核心页面容器 -->
+    <div class="page-container">
+        <h1>请抽取今日灵感牌</h1>
+        <div class="shuffle-tip">命运昭示中...</div>
+        <div class="tarot-deck" id="tarotDeck">
+            <div class="tarot-card-back"></div>
+            <div class="tarot-card-back"></div>
+            <div class="tarot-card-back pick-card"></div>
+            <div class="tarot-card-back"></div>
+            <div class="tarot-card-back"></div>
+            <div class="tarot-card-front"></div>
+        </div>
+        <p class="tip-text">你的答案，掌握在你手中</p>
+        <!-- 替换原有a标签为button，绑定动画+跳转函数 -->
+        <button onclick="goToMeaning()" class="enter-btn">查看牌意</button>
+    </div>
+
+    <!-- ========== 底部购买链接网址跳转替换 ========== -->
+    <div class="buy-link-container">
+        <!-- 🔴 替换这里的链接为你的购买地址 -->
+        <a href="https://www.bilibili.com/bangumi/play/ep3051843?spm_id_from=333.337.search-card.all.click" class="buy-link">命运的指引，从此处开始</a>
+    </div>
+
+    <script>
+        // 音乐控制
+        const musicBtn = document.getElementById('musicBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        let isMusicPlay = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (isMusicPlay) {
+                bgMusic.pause();
+                musicBtn.textContent = "🎵";
+            } else {
+                bgMusic.play().catch(() => {
+                    alert("点击页面任意位置后再试～");
+                });
+                musicBtn.textContent = "⏸";
+            }
+            isMusicPlay = !isMusicPlay;
+        });
+
+        // 自动洗牌抽牌
+        const tarotDeck = document.getElementById('tarotDeck');
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                tarotDeck.classList.add('draw');
+            }, 2500);
+        });
+
+        // ========== 新增：跳转+全屏过渡动画函数（更丝滑的转场） ==========
+        function goToMeaning() {
+            // 1. 动态创建遮罩（不用依赖原有CSS/HTML）
+            const mask = document.createElement('div');
+            mask.className = 'jump-mask'; // 使用CSS类名，避免内联样式冗余
+            document.body.appendChild(mask);
+
+            // 2. 强制触发遮罩淡入（加个微延迟确保DOM渲染完成）
+            setTimeout(() => {
+                mask.style.opacity = '1';
+            }, 10);
+
+            // 3. 500ms后跳转（遮罩完全显示）
+            setTimeout(() => {
+                // 这里替换成你实际的牌意页面地址
+                window.location.href = 'interpretation-thefool.html';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
